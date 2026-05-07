@@ -1,150 +1,106 @@
-# Load overrides.env if it exists
-if [ -f overrides.env ]; then
-    echo "Loading environment variables from overrides.env"
-    source overrides.env
-else
-    echo "No overrides.env file found. Using default environment variables."
-    echo "You can create an overrides.env from overrides.env.example to set custom environment variables for this cluster."
-fi 
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Load common.env if it exists
-if [ -f common.env ]; then
-    echo "Loading environment variables from common.env"
-    source common.env
-else
-    echo "No common.env file found. Using default environment variables."
-fi 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Support ./cluster.sh create aws, gcp, azure, kind, openshift
-# Support ./cluster.sh destroy aws, gcp, azure, kind, openshift
-# Support ./cluster.sh info aws, gcp, azure, kind, openshift
-# Support ./cluster.sh help
-# Support ./cluster.sh allow-ip aws,gcp, azure, kind, openshift one or more IP addresses or CIDR blocks
-# Support ./cluster.sh allow-port aws,gcp, azure, kind, openshift one or more ports or port ranges
-# 
-
-if [ "$1" == "create" ]; then
-    if [ "$2" == "aws" ]; then
-        echo "Creating AWS cluster..."
-        # Add AWS cluster creation logic here
-        # call ./provider/aws/eks.sh to do terraform apply with the appropriate variables (./provider/aws/aws.env) and configuration for AWS
-    elif [ "$2" == "gcp" ]; then
-        echo "Creating GCP cluster..."
-        # Add GCP cluster creation logic here
-        # call ./provider/gcp/gke.sh to do terraform apply with the appropriate variables (./provider/gcp/gcp.env) and configuration for GCP
-    elif [ "$2" == "azure" ]; then
-        echo "Creating Azure cluster..."
-        # Add Azure cluster creation logic here
-        # call ./provider/azure/aks.sh to do terraform apply with the appropriate variables (./provider/azure/azure.env) and configuration for Azure
-    elif [ "$2" == "kind" ]; then
-        echo "Creating Kind cluster..."
-        # Add Kind cluster creation logic here
-        # call ./provider/kind/kind.sh to do simple cluster creation with the appropriate variables (./provider/kind/kind.env) and configuration for Kind
-    elif [ "$2" == "openshift" ]; then
-        echo "Creating OpenShift cluster..."
-        # Add OpenShift cluster creation logic here
-        # call ./provider/rosa/openshift.sh to do terraform apply with the appropriate variables (./provider/rosa/rosa.env) and configuration for OpenShift
-    else
-        echo "Unknown provider: $2"
-        exit 1
-    fi
-elif [ "$1" == "destroy" ]; then
-    if [ "$2" == "aws" ]; then
-        echo "Destroying AWS cluster..."
-        # Add AWS cluster destruction logic here
-        # call ./provider/aws/eks.sh to do terraform destroy with the appropriate variables (./provider/aws/aws.env) and configuration for AWS
-    elif [ "$2" == "gcp" ]; then
-        echo "Destroying GCP cluster..."
-        # Add GCP cluster destruction logic here
-        # call ./provider/gcp/gke.sh to do terraform destroy with the appropriate variables (./provider/gcp/gcp.env) and configuration for GCP
-    elif [ "$2" == "azure" ]; then
-        echo "Destroying Azure cluster..."
-        # Add Azure cluster destruction logic here
-        # call ./provider/azure/aks.sh to do terraform destroy with the appropriate variables (./provider/azure/azure.env) and configuration for Azure
-    elif [ "$2" == "kind" ]; then
-        echo "Destroying Kind cluster..."
-        # Add Kind cluster destruction logic here
-        # call ./provider/kind/kind.sh to do simple cluster destruction with the appropriate variables (./provider/kind/kind.env) and configuration for Kind
-    elif [ "$2" == "openshift" ]; then
-        echo "Destroying OpenShift cluster..."
-        # Add OpenShift cluster destruction logic here
-        # call ./provider/rosa/openshift.sh to do terraform destroy with the appropriate variables (./provider/rosa/rosa.env) and configuration for OpenShift
-    else
-        echo "Unknown provider: $2"
-        exit 1
-    fi
-elif [ "$1" == "info" ]; then
-    if [ "$2" == "aws" ]; then
-        echo "Getting info for AWS cluster..."
-        # Add AWS cluster info logic here
-    elif [ "$2" == "gcp" ]; then
-        echo "Getting info for GCP cluster..."
-        # Add GCP cluster info logic here
-    elif [ "$2" == "azure" ]; then
-        echo "Getting info for Azure cluster..."
-        # Add Azure cluster info logic here
-    elif [ "$2" == "kind" ]; then
-        echo "Getting info for Kind cluster..."
-        # Add Kind cluster info logic here
-    elif [ "$2" == "openshift" ]; then
-        echo "Getting info for OpenShift cluster..."
-        # Add OpenShift cluster info logic here
-    else
-        echo "Unknown provider: $2"
-        exit 1
-    fi
-elif [ "$1" == "allow-ip" ]; then
-    if [ "$2" == "aws" ]; then
-        echo "Allowing IPs for AWS cluster..."
-        # Add AWS allow IP logic here
-    elif [ "$2" == "gcp" ]; then
-        echo "Allowing IPs for GCP cluster..."
-        # Add GCP allow IP logic here
-    elif [ "$2" == "azure" ]; then
-        echo "Allowing IPs for Azure cluster..."
-        # Add Azure allow IP logic here
-    elif [ "$2" == "kind" ]; then
-        echo "Allowing IPs for Kind cluster..."
-        # Add Kind allow IP logic here
-    elif [ "$2" == "openshift" ]; then
-        echo "Allowing IPs for OpenShift cluster..."
-        # Add OpenShift allow IP logic here
-    else
-        echo "Unknown provider: $2"
-        exit 1
-    fi
-elif [ "$1" == "allow-port" ]; then
-    if [ "$2" == "aws" ]; then
-        echo "Allowing ports for AWS cluster..."
-        # Add AWS allow port logic here
-    elif [ "$2" == "gcp" ]; then
-        echo "Allowing ports for GCP cluster..."
-        # Add GCP allow port logic here
-    elif [ "$2" == "azure" ]; then
-        echo "Allowing ports for Azure cluster..."
-        # Add Azure allow port logic here
-    elif [ "$2" == "kind" ]; then
-        echo "Allowing ports for Kind cluster..."
-        # Add Kind allow port logic here
-    elif [ "$2" == "openshift" ]; then
-        echo "Allowing ports for OpenShift cluster..."
-        # Add OpenShift allow port logic here
-    else
-        echo "Unknown provider: $2"
-        exit 1
-    fi
-elif [ "$1" == "help" ]; then
-    echo "Usage: $0 [command] [provider] [options]"
-    echo "Commands:"
-    echo "  create [provider] - Create a cluster for the specified provider (aws, gcp, azure, kind, openshift)"
-    echo "  destroy [provider] - Destroy the cluster for the specified provider"
-    echo "  info [provider] - Get information about the cluster for the specified provider"
-    echo "  allow-ip [provider] [IPs] - Allow one or more IP addresses or CIDR blocks for the specified provider"
-    echo "  allow-port [provider] [ports] - Allow one or more ports or port ranges for the specified provider" 
-    echo "  help - Show this help message"
+# overrides.env always wins — load it first
+if [[ -f "$SCRIPT_DIR/overrides.env" ]]; then
+    echo "Loading overrides.env"
+    # shellcheck source=/dev/null
+    source "$SCRIPT_DIR/overrides.env"
 else
-    echo "Unknown command: $1"
-    echo "Use '$0 help' for usage information."
-    exit 1
+    echo "No overrides.env found. Copy overrides.env.example to overrides.env to set your values."
 fi
 
+# common.env — only sets variables that are not already set
+if [[ -f "$SCRIPT_DIR/common.env" ]]; then
+    echo "Loading common.env"
+    # shellcheck source=/dev/null
+    source "$SCRIPT_DIR/common.env"
+fi
+
+COMMAND="${1:-help}"
+PROVIDER="${2:-}"
+shift 2 2>/dev/null || shift "$#"   # remaining args passed through (e.g. CIDRs for allow-ip)
+EXTRA_ARGS=("$@")
+
+run_provider() {
+    local script="$1"
+    shift
+    if [[ ! -f "$script" ]]; then
+        echo "Error: provider script not found: $script" >&2
+        exit 1
+    fi
+    bash "$script" "$@"
+}
+
+case "$COMMAND" in
+
+  create|plan|destroy|info)
+    case "$PROVIDER" in
+      aws)       run_provider "$SCRIPT_DIR/provider/aws/eks.sh"          "$COMMAND" ;;
+      gcp)       run_provider "$SCRIPT_DIR/provider/gcp/gke.sh"          "$COMMAND" ;;
+      azure)     run_provider "$SCRIPT_DIR/provider/azure/aks.sh"        "$COMMAND" ;;
+      kind)      run_provider "$SCRIPT_DIR/provider/kind/kind.sh"        "$COMMAND" ;;
+      openshift) run_provider "$SCRIPT_DIR/provider/rosa/openshift.sh"   "$COMMAND" ;;
+      "")
+        echo "Error: provider required. Usage: $0 $COMMAND <aws|gcp|azure|kind|openshift>" >&2
+        exit 1 ;;
+      *)
+        echo "Error: unknown provider '$PROVIDER'. Valid: aws, gcp, azure, kind, openshift" >&2
+        exit 1 ;;
+    esac ;;
+
+  allow-ip)
+    case "$PROVIDER" in
+      aws)       run_provider "$SCRIPT_DIR/provider/aws/eks.sh"          "allow-ip" "${EXTRA_ARGS[@]}" ;;
+      gcp)       run_provider "$SCRIPT_DIR/provider/gcp/gke.sh"          "allow-ip" "${EXTRA_ARGS[@]}" ;;
+      azure)     run_provider "$SCRIPT_DIR/provider/azure/aks.sh"        "allow-ip" "${EXTRA_ARGS[@]}" ;;
+      kind)      echo "kind clusters are local — IP allowlisting is not applicable." ;;
+      openshift) run_provider "$SCRIPT_DIR/provider/rosa/openshift.sh"   "allow-ip" "${EXTRA_ARGS[@]}" ;;
+      "")
+        echo "Error: provider required. Usage: $0 allow-ip <provider> <CIDR> [CIDR...]" >&2
+        exit 1 ;;
+      *)
+        echo "Error: unknown provider '$PROVIDER'." >&2
+        exit 1 ;;
+    esac ;;
+
+  allow-port)
+    echo "allow-port is not yet implemented." >&2
+    echo "To open a port: update your security group rules and re-run: $0 create $PROVIDER" >&2
+    exit 1 ;;
+
+  help|--help|-h)
+    cat <<EOF
+Usage: $0 <command> <provider> [options]
+
+Commands:
+  create     <provider>               Create cluster (init → plan → apply → write generated env)
+  plan       <provider>               Show Terraform plan without applying
+  destroy    <provider>               Destroy cluster and remove generated env file
+  info       <provider>               Print generated cluster env (run after create)
+  allow-ip   <provider> <CIDR...>     Add CIDRs to the API server allowlist and re-apply
+  help                                Show this message
+
+Providers:
+  aws         EKS via Terraform  (provider/aws/)
+  gcp         GKE via Terraform  (provider/gcp/)
+  azure       AKS via Terraform  (provider/azure/)
+  openshift   ROSA via scripts   (provider/rosa/)
+  kind        Local kind cluster (provider/kind/)
+
+Examples:
+  $0 create aws
+  $0 plan aws
+  $0 destroy aws
+  $0 allow-ip aws 203.0.113.0/24
+  $0 info aws
+EOF
+    ;;
+
+  *)
+    echo "Unknown command: '$COMMAND'. Run '$0 help' for usage." >&2
+    exit 1 ;;
+
+esac
