@@ -20,6 +20,27 @@ source "$SCRIPT_DIR/aws.env"
 # Helpers
 # ---------------------------------------------------------------------------
 
+check_aws_auth() {
+    local identity
+    if ! identity=$(aws sts get-caller-identity \
+            --profile "${TF_VAR_aws_profile:-default}" \
+            --output text \
+            --query '[Account, Arn]' 2>&1); then
+        echo "Error: AWS authentication failed." >&2
+        echo "  Profile : ${TF_VAR_aws_profile:-default}" >&2
+        echo "  Details : $identity" >&2
+        echo "" >&2
+        echo "Run 'aws sso login --profile ${TF_VAR_aws_profile:-default}' or configure your credentials." >&2
+        exit 1
+    fi
+    local account arn
+    account=$(echo "$identity" | awk '{print $1}')
+    arn=$(echo "$identity"     | awk '{print $2}')
+    echo "AWS account : $account"
+    echo "Identity    : $arn"
+    echo ""
+}
+
 fetch_local_ip() {
     local ip
     ip=$(curl -sf --max-time 5 https://checkip.amazonaws.com 2>/dev/null) ||
@@ -91,6 +112,7 @@ update_kubeconfig() {
 case "$ACTION" in
 
   create)
+    check_aws_auth
     export TF_VAR_local_public_ip="$(fetch_local_ip)/32"
     echo "Local public IP: $TF_VAR_local_public_ip"
 
@@ -111,6 +133,7 @@ case "$ACTION" in
     ;;
 
   plan)
+    check_aws_auth
     export TF_VAR_local_public_ip="$(fetch_local_ip)/32"
     echo "Local public IP: $TF_VAR_local_public_ip"
 
@@ -124,6 +147,7 @@ case "$ACTION" in
     ;;
 
   destroy)
+    check_aws_auth
     export TF_VAR_local_public_ip="$(fetch_local_ip)/32"
 
     echo ""
@@ -153,6 +177,7 @@ case "$ACTION" in
     ;;
 
   allow-ip)
+    check_aws_auth
     if [[ ${#EXTRA_ARGS[@]} -eq 0 ]]; then
         echo "Usage: cluster.sh allow-ip aws <CIDR> [CIDR...]" >&2
         exit 1
