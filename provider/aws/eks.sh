@@ -21,23 +21,18 @@ source "$SCRIPT_DIR/aws.env"
 # ---------------------------------------------------------------------------
 
 check_aws_auth() {
-    local identity
-    if ! identity=$(aws sts get-caller-identity \
-            --profile "${TF_VAR_aws_profile:-default}" \
-            --output text \
-            --query '[Account, Arn]' 2>&1); then
+    local profile="${TF_VAR_aws_profile:-default}"
+    local output
+    if ! output=$(aws sts get-caller-identity --profile "$profile" --output json 2>&1); then
         echo "Error: AWS authentication failed." >&2
-        echo "  Profile : ${TF_VAR_aws_profile:-default}" >&2
-        echo "  Details : $identity" >&2
+        echo "  Profile : $profile" >&2
+        echo "  Details : $output" >&2
         echo "" >&2
-        echo "Run 'aws sso login --profile ${TF_VAR_aws_profile:-default}' or configure your credentials." >&2
+        echo "Run 'aws sso login --profile $profile' or configure your credentials." >&2
         exit 1
     fi
-    local account arn
-    account=$(echo "$identity" | awk '{print $1}')
-    arn=$(echo "$identity"     | awk '{print $2}')
-    echo "AWS account : $account"
-    echo "Identity    : $arn"
+    echo "AWS account : $(echo "$output" | jq -r '.Account')"
+    echo "Identity    : $(echo "$output" | jq -r '.Arn')"
     echo ""
 }
 
