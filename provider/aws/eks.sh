@@ -33,6 +33,7 @@ check_aws_auth() {
     fi
     echo "AWS account : $(echo "$output" | jq -r '.Account')"
     echo "Identity    : $(echo "$output" | jq -r '.Arn')"
+    echo "Profile     : $profile"
     echo ""
 }
 
@@ -45,6 +46,16 @@ fetch_local_ip() {
         exit 1
     }
     echo "${ip//[$'\r\n']}"   # strip any trailing newline/CR
+}
+
+confirm() {
+    local action="$1"
+    local response
+    read -r -p "Confirm $action on this account? [y/N] " response
+    case "$response" in
+        [yY][eE][sS]|[yY]) ;;
+        *) echo "Aborted." >&2; exit 1 ;;
+    esac
 }
 
 tf() {
@@ -108,6 +119,7 @@ case "$ACTION" in
 
   create)
     check_aws_auth
+    confirm "create"
     export TF_VAR_local_public_ip="$(fetch_local_ip)/32"
     echo "Local public IP: $TF_VAR_local_public_ip"
 
@@ -143,6 +155,7 @@ case "$ACTION" in
 
   destroy)
     check_aws_auth
+    confirm "destroy"
     export TF_VAR_local_public_ip="$(fetch_local_ip)/32"
 
     echo ""
