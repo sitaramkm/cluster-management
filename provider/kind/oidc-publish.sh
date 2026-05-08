@@ -20,7 +20,7 @@ fi
 
 if [[ -z "${KIND_GITHUB_PAGES_DIR:-}" ]]; then
     echo "Error: KIND_GITHUB_PAGES_DIR is not set." >&2
-    echo "Set it in overrides.env to the path of your local sitaramkm.github.io clone." >&2
+    echo "Set it in overrides.env to the path of your local GitHub Pages clone." >&2
     exit 1
 fi
 
@@ -65,6 +65,9 @@ pages_subpath="${pages_subpath#*/}"   # strip domain
 
 pages_dir="${KIND_GITHUB_PAGES_DIR}/${pages_subpath}"
 
+# .nojekyll is required so GitHub Pages serves dot-directories like .well-known
+touch "${KIND_GITHUB_PAGES_DIR}/.nojekyll"
+
 mkdir -p "${pages_dir}/.well-known"
 mkdir -p "${pages_dir}/openid/v1"
 
@@ -80,7 +83,7 @@ echo "  ${pages_dir}/openid/v1/jwks"
 # ---------------------------------------------------------------------------
 
 cd "${KIND_GITHUB_PAGES_DIR}"
-git add "${pages_subpath}/"
+git add .nojekyll "${pages_subpath}/"
 git commit -m "Add OIDC documents for kind cluster ${KIND_CLUSTER_NAME}"
 git push
 
