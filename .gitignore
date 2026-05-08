@@ -47,3 +47,4 @@ terraform.rc
 # planout
 overrides.env
 .terraform.lock.hcl
+provider/kind/extra-mounts/*.pem
